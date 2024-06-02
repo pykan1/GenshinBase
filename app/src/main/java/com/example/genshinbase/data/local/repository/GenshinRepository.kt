@@ -20,7 +20,7 @@ interface GenshinRepository {
     suspend fun insert(character: CharacterModel): Long
 
     @Query("SELECT * FROM character WHERE characterId = :id")
-    suspend fun getCharacterById(id: Long): CharacterModel?
+    suspend fun getCharacterById(id: Long): CharacterModel
 
     @Query("SELECT * FROM character")
     suspend fun getAllCharacters(): List<CharacterModel>
@@ -32,7 +32,7 @@ interface GenshinRepository {
     suspend fun insert(element: Element): Long
 
     @Query("SELECT * FROM element WHERE elementId = :id")
-    suspend fun getElementById(id: Long): Element?
+    suspend fun getElementById(id: Long): Element
 
     @Query("SELECT * FROM element")
     suspend fun getAllElements(): List<Element>
@@ -40,14 +40,14 @@ interface GenshinRepository {
     @Delete
     suspend fun delete(element: Element)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insert(rarity: Rarity): Long
 
     @Query("SELECT * FROM rarity WHERE rarityId = :id")
-    suspend fun getRarityById(id: Long): Rarity?
+    suspend fun getRarityById(id: Long): Rarity
 
     @Query("SELECT * FROM rarity")
-    fun getAllRarities(): List<Rarity>
+    suspend fun getAllRarities(): List<Rarity>
 
     @Delete
     suspend fun delete(rarity: Rarity)
@@ -56,7 +56,7 @@ interface GenshinRepository {
     suspend fun insert(region: Region): Long
 
     @Query("SELECT * FROM region WHERE regionId = :id")
-    suspend fun getRegionById(id: Long): Region?
+    suspend fun getRegionById(id: Long): Region
 
     @Query("SELECT * FROM region")
     suspend fun getAllRegions(): List<Region>
@@ -80,7 +80,7 @@ interface GenshinRepository {
     suspend fun insert(weapon: Weapon): Long
 
     @Query("SELECT * FROM weapon WHERE weaponId = :id")
-    suspend fun getWeaponById(id: Long): Weapon?
+    suspend fun getWeaponById(id: Long): Weapon
 
     @Query("SELECT * FROM weapon")
     suspend fun getAllWeapons(): List<Weapon>

@@ -17,29 +17,35 @@ import javax.inject.Inject
 
 class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: GenshinRepository) {
 
-    suspend fun insertCharacter(characterUI: CharacterUI): Long {
-        val character = CharacterModel(
-            name = characterUI.name,
-            weaponTypeId = characterUI.weaponTypeId,
-            regionId = characterUI.regionId,
-            rarityId = characterUI.rarity,
-            elementId = characterUI.elementId,
-            url = characterUI.url
-        )
-        return genshinRepository.insert(character)
+    suspend fun insertCharacterModel(characterModel: CharacterModel): Long {
+        return genshinRepository.insert(characterModel)
     }
 
-    suspend fun getCharacterById(id: Long): CharacterUI? {
+    suspend fun getCharacterById(id: Long): CharacterUI {
         val character = genshinRepository.getCharacterById(id)
-        return character?.let {
+        val weapon = genshinRepository.getWeaponById(character.weaponId)
+        val region = genshinRepository.getRegionById(character.regionId)
+        val element = genshinRepository.getElementById(character.elementId)
+        val rarity = genshinRepository.getRarityById(character.rarityId)
+        val weaponRarity = genshinRepository.getRarityById(weapon.rarityId)
+        return character.let {
             CharacterUI(
                 characterId = it.characterId,
                 name = it.name,
-                weaponTypeId = it.weaponTypeId,
-                regionId = it.regionId,
-                rarity = it.rarityId,
-                elementId = it.elementId,
-                url = it.url
+                region = RegionUI(regionId = region.regionId, name = region.name),
+                rarity = rarity.starts.toLong(),
+                element = ElementUI(elementId = element.elementId, name = element.name),
+                url = it.url,
+                weapon = weapon.let {
+                    WeaponUI(
+                        weaponId = it.weaponId,
+                        name = it.name,
+                        rarity = weaponRarity.starts.toLong(),
+                        weaponTypeId = it.weaponTypeId,
+                        url = it.url
+                    )
+                },
+                description = it.description
             )
         }
     }
@@ -47,16 +53,33 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
     suspend fun getAllCharacters(): List<CharacterUI> {
         val characters = genshinRepository.getAllCharacters()
         return characters.map {
-            val rarity = genshinRepository.getRarityById(it.rarityId)
-            CharacterUI(
-                characterId = it.characterId,
-                name = it.name,
-                weaponTypeId = it.weaponTypeId,
-                regionId = it.regionId,
-                rarity = (rarity?.starts?: 1).toLong(),
-                elementId = it.elementId,
-                url = it.url
-            )
+            val character = it
+            val weapon = genshinRepository.getWeaponById(character.weaponId)
+            val region = genshinRepository.getRegionById(character.regionId)
+            val element = genshinRepository.getElementById(character.elementId)
+            val rarity = genshinRepository.getRarityById(character.rarityId)
+            val weaponRarity = genshinRepository.getRarityById(weapon.rarityId)
+            character.let {
+                println(it)
+                CharacterUI(
+                    characterId = it.characterId,
+                    name = it.name,
+                    region = RegionUI(regionId = region.regionId, name = region.name),
+                    rarity = rarity.starts.toLong(),
+                    element = ElementUI(elementId = element.elementId, name = element.name),
+                    url = it.url,
+                    weapon = weapon.let {
+                        WeaponUI(
+                            weaponId = it.weaponId,
+                            name = it.name,
+                            rarity = weaponRarity.starts.toLong(),
+                            weaponTypeId = it.weaponTypeId,
+                            url = it.url
+                        )
+                    },
+                    description = it.description
+                )
+            }
         }
     }
 
@@ -64,21 +87,23 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
         val character = CharacterModel(
             characterId = characterUI.characterId,
             name = characterUI.name,
-            weaponTypeId = characterUI.weaponTypeId,
-            regionId = characterUI.regionId,
+            weaponId = characterUI.weapon.weaponTypeId,
+            regionId = characterUI.region.regionId,
             rarityId = characterUI.rarity,
-            elementId = characterUI.elementId,
-            url = characterUI.url
+            elementId = characterUI.element.elementId,
+            url = characterUI.url,
+            description = characterUI.description
         )
         genshinRepository.delete(character)
     }
 
-    suspend fun insertElement(elementUI: ElementUI): Element {
+    suspend fun insertElement(elementUI: ElementUI): Long {
         val element = Element(
+            elementId = elementUI.elementId,
             name = elementUI.name
         )
         val id = genshinRepository.insert(element)
-        return element.copy(elementId = id)
+        return id
     }
 
     suspend fun getElementById(id: Long): ElementUI? {
@@ -109,14 +134,13 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
         genshinRepository.delete(element)
     }
 
-    suspend fun insertRarity(rarityUI: RarityUI): Rarity {
+    suspend fun insertRarity(rarityUI: RarityUI): Long {
         val rarity = Rarity(
+            rarityId = rarityUI.rarityId,
             starts = rarityUI.stars
         )
         val id = genshinRepository.insert(rarity)
-        return rarity.copy(
-            rarityId = id
-        )
+        return id
     }
 
     suspend fun getRarityById(id: Long): RarityUI? {
@@ -149,6 +173,7 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
 
     suspend fun insertRegion(regionUI: RegionUI): Long {
         val region = Region(
+            regionId = regionUI.regionId,
             name = regionUI.name
         )
         return genshinRepository.insert(region)
@@ -182,12 +207,13 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
         genshinRepository.delete(region)
     }
 
-    suspend fun insertWeaponType(weaponTypeUI: WeaponTypeUI): WeaponType {
+    suspend fun insertWeaponType(weaponTypeUI: WeaponTypeUI): Long {
         val weaponType = WeaponType(
+            weaponTypeId = weaponTypeUI.weaponTypeId,
             name = weaponTypeUI.name
         )
         val weaponTypeId = genshinRepository.insert(weaponType)
-        return weaponType.copy(weaponTypeId = weaponTypeId)
+        return weaponTypeId
     }
 
     suspend fun getWeaponTypeById(id: Long): WeaponTypeUI? {
@@ -218,23 +244,28 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
         genshinRepository.delete(weaponType)
     }
 
-    suspend fun insertWeapon(weaponUI: WeaponUI): Long {
+    suspend fun insertWeapon(weaponModel: Weapon): Long {
+
         val weapon = Weapon(
-            name = weaponUI.name,
-            rarityId = weaponUI.rarityId,
-            weaponTypeId = weaponUI.weaponTypeId
+            weaponId = weaponModel.weaponId,
+            name = weaponModel.name,
+            rarityId = weaponModel.rarityId,
+            weaponTypeId = weaponModel.weaponTypeId,
+            url = weaponModel.url
         )
         return genshinRepository.insert(weapon)
     }
 
     suspend fun getWeaponById(id: Long): WeaponUI? {
         val weapon = genshinRepository.getWeaponById(id)
-        return weapon?.let {
+        val rarity = genshinRepository.getRarityById(weapon.rarityId)
+        return weapon.let {
             WeaponUI(
                 weaponId = it.weaponId,
                 name = it.name,
-                rarityId = it.rarityId,
-                weaponTypeId = it.weaponTypeId
+                rarity = rarity.starts.toLong(),
+                weaponTypeId = it.weaponTypeId,
+                url = it.url
             )
         }
     }
@@ -242,23 +273,15 @@ class GenshinRepositoryImpl @Inject constructor(private val genshinRepository: G
     suspend fun getAllWeapons(): List<WeaponUI> {
         val weapons = genshinRepository.getAllWeapons()
         return weapons.map {
+            val rarity = genshinRepository.getRarityById(it.rarityId)
             WeaponUI(
                 weaponId = it.weaponId,
                 name = it.name,
-                rarityId = it.rarityId,
-                weaponTypeId = it.weaponTypeId
+                rarity = rarity.starts.toLong(),
+                weaponTypeId = it.weaponTypeId,
+                url = it.url
             )
         }
-    }
-
-    suspend fun deleteWeapon(weaponUI: WeaponUI) {
-        val weapon = Weapon(
-            weaponId = weaponUI.weaponId,
-            name = weaponUI.name,
-            rarityId = weaponUI.rarityId,
-            weaponTypeId = weaponUI.weaponTypeId
-        )
-        genshinRepository.delete(weapon)
     }
 
 }
