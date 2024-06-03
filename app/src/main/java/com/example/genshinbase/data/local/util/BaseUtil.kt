@@ -1,18 +1,18 @@
 package com.example.genshinbase.data.local.util
 
 import com.example.genshinbase.data.local.models.CharacterModel
+import com.example.genshinbase.data.local.models.Material
 import com.example.genshinbase.data.local.models.Weapon
 import com.example.genshinbase.data.local.repositoryImpl.GenshinRepositoryImpl
-import com.example.genshinbase.domain.models.CharacterUI
 import com.example.genshinbase.domain.models.ElementUI
 import com.example.genshinbase.domain.models.RarityUI
 import com.example.genshinbase.domain.models.RegionUI
 import com.example.genshinbase.domain.models.WeaponTypeUI
-import com.example.genshinbase.domain.models.WeaponUI
 
 object BaseUtil {
 
-    suspend fun insertCharacters(repository: GenshinRepositoryImpl, doSuccess: () -> Unit) {
+    //заполнение данныъ
+    suspend fun insertData(repository: GenshinRepositoryImpl, doSuccess: () -> Unit) {
         val regionTest = repository.insertRegion(RegionUI(0, name = "Снежный"))
 
         // Вставка данных о типах оружия
@@ -34,6 +34,18 @@ object BaseUtil {
         // Вставка данных о редкости
         val fourStarRarity = repository.insertRarity(RarityUI(0, 4))
         val fiveStarRarity = repository.insertRarity(RarityUI(1, 5))
+
+        // Вставка данных о материалах
+        val material1 = repository.insertMaterial(Material(1, "Филанемо гриб", "https://static.wikia.nocookie.net/genshin-impact/images/1/1f/%D0%9F%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82_%D0%93%D1%80%D0%B8%D0%B1_%D1%84%D0%B8%D0%BB%D0%B0%D0%BD%D0%B5%D0%BC%D0%BE.png/revision/latest?cb=20210219225022&path-prefix=ru", "Гриб, растущий в тени крыш. Является любимым материалом для приготовления лекарств у горожан Мондштадта.", fourStarRarity))
+        val material2 = repository.insertMaterial(Material(2, "Лилия Калла", "https://static.wikia.nocookie.net/genshin-impact/images/c/cc/%D0%9F%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82_%D0%9B%D0%B8%D0%BB%D0%B8%D1%8F_%D0%BA%D0%B0%D0%BB%D0%BB%D0%B0.png/revision/latest?cb=20210215163856&path-prefix=ru", "Цветок, растущий у водоемов. Его свежий вкус делает его популярным ингредиентом для готовки.", fourStarRarity))
+        val material3 = repository.insertMaterial(Material(3, "Фиолетовая трава", "https://static.wikia.nocookie.net/genshin-impact/images/f/fa/%D0%94%D0%B5%D0%BA%D0%BE%D1%80_%D0%9C%D1%80%D0%B0%D1%87%D0%BD%D0%BE%D0%B5_%D0%B2%D0%B5%D0%BB%D0%B8%D0%BA%D0%BE%D0%BB%D0%B5%D0%BF%D0%B8%D0%B5.png/revision/latest?cb=20221102161057&path-prefix=ru", "Трава, растущая на высоких утесах. Обладает сильными лечебными свойствами.", fourStarRarity))
+        val material4 = repository.insertMaterial(Material(4, "Цветок Сесилии", "https://static.wikia.nocookie.net/genshin-impact/images/4/42/%D0%9F%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82_%D0%A1%D0%B5%D1%81%D0%B8%D0%BB%D0%B8%D1%8F.png/revision/latest?cb=20210505072548&path-prefix=ru", "Цветок, который растет только на Ветряной террасе. Нежный, но устойчивый к погодным условиям.", fourStarRarity))
+        val material5 = repository.insertMaterial(Material(5, "Перец цзеюнь", "https://static.wikia.nocookie.net/genshin-impact/images/1/14/%D0%9F%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82_%D0%9F%D0%B5%D1%80%D0%B5%D1%86.png/revision/latest?cb=20201122082221&path-prefix=ru", "Перец, растущий в горах. Его жгучий вкус придает силу.", fourStarRarity))
+        val material6 = repository.insertMaterial(Material(6, "Лилия Глазурь", "https://static.wikia.nocookie.net/genshin-impact/images/1/1b/%D0%9F%D1%80%D0%B5%D0%B4%D0%BC%D0%B5%D1%82_%D0%93%D0%BB%D0%B0%D0%B7%D1%83%D1%80%D0%BD%D0%B0%D1%8F_%D0%BB%D0%B8%D0%BB%D0%B8%D1%8F.png/revision/latest?cb=20210219230610&path-prefix=ru", "Цветок, который излучает свет. В прошлом он использовался для создания специальных свечей.", fourStarRarity))
+        val material7 = repository.insertMaterial(Material(7, "Анемон ветреницы", "https://static.wikia.nocookie.net/gensin-impact/images/0/0a/Item_Windwheel_Aster.png", "Цветок, растущий в ветреных местах. Его лепестки крутятся подобно ветряной мельнице.", fourStarRarity))
+        val material8 = repository.insertMaterial(Material(8, "Маленькая ламповая трава", "https://static.wikia.nocookie.net/genshin-impact/images/e/e1/%D0%9A%D0%BE%D0%BC%D0%BF%D0%BB%D0%B5%D0%BA%D1%82_%D0%9A%D0%B0%D0%BC%D0%BD%D0%B8_%D0%B8_%D1%82%D1%80%D0%B0%D0%B2%D0%B0.png/revision/latest?cb=20221022155017&path-prefix=ru", "Трава, светящаяся в темноте. Любима авантюристами за свою яркость.", fourStarRarity))
+        val material9 = repository.insertMaterial(Material(9, "Сердце Бога", "https://static.wikia.nocookie.net/genshin-impact/images/5/5c/%D0%A1%D0%B5%D1%80%D0%B4%D1%86%D0%B5_%D0%91%D0%BE%D0%B3%D0%B0_%D0%90%D0%BD%D0%B5%D0%BC%D0%BE.png/revision/latest?cb=20221111034638&path-prefix=ru", "Редкий коралл, который можно найти на глубине. Считается талисманом удачи.", fiveStarRarity))
+        val material10 = repository.insertMaterial(Material(10, "Ледяной цветок камифубуки", "https://static.wikia.nocookie.net/genshin-impact/images/1/13/%D0%A1%D0%BE%D0%B7%D0%B2%D0%B5%D0%B7%D0%B4%D0%B8%D0%B5_%D0%9B%D0%B5%D0%B4%D1%8F%D0%BD%D0%BE%D0%B9_%D1%86%D0%B2%D0%B5%D1%82%D0%BE%D0%BA_%D0%BA%D0%B0%D0%BC%D0%B8%D1%84%D1%83%D0%B1%D1%83%D0%BA%D0%B8.png/revision/latest?cb=20211206090105&path-prefix=ru", "Редкий цветок, растущий в суровых зимних условиях. Его лепестки сияют, как лед.", fiveStarRarity))
 
         // Вставка данных об оружии
         val weaponThoma = repository.insertWeapon(Weapon(0, "Favonius Lance", fourStarRarity, polearmType, "https://static.wikia.nocookie.net/gensin-impact/images/5/57/Weapon_Favonius_Lance.png/revision/latest?cb=20201116154512"))

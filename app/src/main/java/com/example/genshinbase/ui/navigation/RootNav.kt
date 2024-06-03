@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -35,15 +36,27 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.genshinbase.ui.presentation.detailCharacter.DetailCharacterScreen
+import com.example.genshinbase.ui.presentation.detailMaterial.DetailMaterialScreen
 import com.example.genshinbase.ui.presentation.home.HomeScreen
 import com.example.genshinbase.ui.presentation.main.MainScreen
+import com.example.genshinbase.ui.presentation.material.MaterialScreen
 import com.example.genshinbase.ui.presentation.weapon.WeaponCharacterScreen
 
+
+//данные о экранах навигации
 sealed class Screens(val route: String, val title: String = "", val icon: ImageVector? = null) {
 
     object Main : Screens(route = "main", title = "Персонажи", icon = Icons.Default.Person)
     object Weapon : Screens(route = "weapon", title = "Оружие", icon = Icons.Default.Build)
     object Home : Screens(route = "home", title = "Главная", icon = Icons.Default.Home)
+    object Material :
+        Screens(route = "material", title = "Материалы", icon = Icons.AutoMirrored.Default.List)
+
+    object MaterialDetail : Screens(route = "material/{id}"){
+        fun generateLink(id: Long): String {
+            return "material/$id"
+        }
+    }
 
     object DetailCharacter : Screens(route = "character/{id}") {
         fun generateLink(id: Long): String {
@@ -53,7 +66,7 @@ sealed class Screens(val route: String, val title: String = "", val icon: ImageV
 
 }
 
-val items = listOf(Screens.Main, Screens.Weapon, Screens.Home)
+val items = listOf(Screens.Home, Screens.Main, Screens.Weapon, Screens.Material)
 
 @Composable
 fun RootNav(navController: NavHostController) {
@@ -116,8 +129,24 @@ fun RootNav(navController: NavHostController) {
                 startDestination = Screens.Main.route,
                 modifier = Modifier.padding(padding)
             ) {
+                composable(
+                    route = Screens.MaterialDetail.route,
+                    arguments = listOf(navArgument("id") {
+                        type = NavType.LongType
+                    })
+                ) {
+                    val id = it.arguments?.getLong("id")
+                    println("id $id")
+                    DetailMaterialScreen(
+                        navHostController = navController,
+                        materialId = id ?: 0
+                    )
+                }
                 composable(route = Screens.Main.route) {
                     MainScreen(navHostController = navController)
+                }
+                composable(route = Screens.Material.route) {
+                    MaterialScreen(navHostController = navController)
                 }
 
                 composable(route = Screens.Weapon.route) {
@@ -138,7 +167,7 @@ fun RootNav(navController: NavHostController) {
                     println("id $id")
                     DetailCharacterScreen(
                         navHostController = navController,
-                        characterId = id?: 0
+                        characterId = id ?: 0
                     )
                 }
             }

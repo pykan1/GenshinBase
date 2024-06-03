@@ -44,7 +44,7 @@ fun WeaponCharacterScreen(navHostController: NavHostController) {
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         contentPadding = PaddingValues(vertical = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(state.value.weapons) {character ->
             WeaponItem(weaponUI = character, modifier = Modifier.fillMaxWidth())
